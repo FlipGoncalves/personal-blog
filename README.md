@@ -14,6 +14,9 @@ cd react-app
 npm start
 ```
 
+## Website
+https://flipgoncalves.github.io/personal-blog/
+
 ## React App Deploy
 https://github.com/gitname/react-gh-pages/tree/master
 
