@@ -32,12 +32,9 @@ function Navbar() {
       <div class="container">
         <div class="row align-items-center">
           
-          <div class="col-md-3 cols-xl-2">
+          <div class="col-md-3 cols-xl-2" style={{font: 'cursive'}}>
               {/* <Link to="/"><a class="text-white mb-0">Home</a></Link> */}
-            <Link
-                to="/">
-                Home
-            </Link>
+            My Name is Inès
           </div>
           <div class="col-md-9 d-none d-xl-block">
             <nav class="site-navigation position-relative text-right" role="navigation">
@@ -70,29 +67,29 @@ function Navbar() {
                         style={({ isActive }) =>
                           isActive ? activeStyle : undefined
                         }>
-                        <span>Listings</span>
+                        <span>Pictures</span>
                     </NavLink></li>
                 <li><NavLink
-                        to="/"
+                        to="/blog"
                         style={({ isActive }) =>
                           isActive ? activeStyle : undefined
                         }>
                         <span>Blog</span>
-                    </NavLink></li>
+                      </NavLink></li>
                 <li><NavLink
-                        to="/"
+                        to="/me"
                         style={({ isActive }) =>
                           isActive ? activeStyle : undefined
                         }>
-                        <span>About</span>
+                        <span>About Inès</span>
                   </NavLink></li>
                 <li><NavLink
-                        to="/"
-                        style={({ isActive }) =>
-                          isActive ? activeStyle : undefined
-                        }>
-                        <span>Contacts</span>
-                  </NavLink></li>
+                      to="/"
+                      style={({ isActive }) =>
+                        isActive ? activeStyle : undefined
+                      }>
+                      <span>Log In</span>
+                </NavLink></li>
               </ul>
             </nav>
           </div>
