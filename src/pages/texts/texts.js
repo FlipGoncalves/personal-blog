@@ -1,6 +1,10 @@
 import React, { useEffect, useState } from 'react';
+import Footer from '../../components/footer/footer';
 import Navbar from '../../components/navbar/navbar';
 import logo from '../../logo.svg'
+import './texts.css'
+import { Slide } from 'react-slideshow-image';
+import 'react-slideshow-image/dist/styles.css'
 
 function Texts() {
 
@@ -9,8 +13,10 @@ function Texts() {
   const [filteredposts, setFilteredposts] = useState(null);
 
   function handleRequest() {
-    // get all posts
-    console.log("get posts")
+  // get all posts
+  console.log("get posts")
+  console.log(localStorage.getItem("Business"))
+  console.log(localStorage.getItem("Business"))
 
     let resp = fetch('http://localhost:5000/posts/all', {
       method: 'GET'
@@ -31,39 +37,6 @@ function Texts() {
     }).catch((error) => {
       console.log("error")
       setPosts([[-1, "Error Handling the data", "", "Please refresh the page and if the error subsits please contact the administartor", [], []]]);
-    })
-  }
-
-  const postPosts = () => {
-    var post = {author: 'Filipe', photos: [], message: 'sim tudo bem', interests: ['Interest 69']}
-    // var post = {author: 'Sandra Leonor', photos: [], message: 'ola ines tudo bem ?', interests: ['Interest 1', 'Interest 3']}
-
-    console.log(post)
-
-    let formData = new FormData();
-
-    formData.append("message", post["message"]);
-    formData.append("author", post["author"]);
-    formData.append("photos", post["photos"]);
-    formData.append("interests", post["interests"]);
-    
-
-    let resp = fetch('http://localhost:5000/posts/all', {
-      method: 'POST',
-      body: formData
-    }).then((data)=>{
-      data.json().then((properties) => {
-        console.log(properties)
-        if ("error" in properties) {
-          console.log("error")
-          return
-        }
-
-        handleRequest()
-
-      })
-    }).catch((error) => {
-      console.log("error")
     })
   }
 
@@ -95,7 +68,7 @@ function Texts() {
   }
 
   return (
-    <div className='App back-color' style={{height: '200vh'}}>
+    <div className='App back-color'>
 
       <Navbar />
 
@@ -109,19 +82,20 @@ function Texts() {
       <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
       <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
       <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" />
+      <link href='https://fonts.googleapis.com/css?family=Lato' rel='stylesheet' type='text/css' />
 
       <br />
 
       <div class="container" style={{maxWidth:'100%', marginTop: '10rem'}}>
         <div class="row">
-          <div class="col-md-9">
+          <div class="col-md-10">
             <input class="form-control" id="myInput" type="text" placeholder="Search.." onChange={handleChange}/>
           </div>
           <div class="col-md-2">
-            <button class="button-3" role="button"><i class="fa fa-search fa-fw w3-margin-right"></i>Search</button>
-          </div>
-          <div class="col-md-1">
-            <button class="button-3" role="button" onClick={postPosts}>Post</button>
+            <button class="button-3" role="button" onClick={() => {
+              console.log(localStorage.getItem("Business"))
+              console.log(localStorage.getItem("Reflections"))
+            }}><i class="fa fa-search fa-fw w3-margin-right"></i>Search</button>
           </div>
         </div>
       </div>
@@ -130,29 +104,29 @@ function Texts() {
         <div class="w3-row">
 
           <div class="w3-col m9">
-            {/* <div class="w3-container w3-row-padding w3-card w3-white w3-round" style={{marginRight: '2rem'}}><br />
-              <img src={logo} alt="Avatar" class="w3-left w3-circle w3-margin-right" style={{width:'60px'}} />
-              <span class="w3-right w3-opacity"> 1914</span>
-              <h4 class="w3-left"> H. Rackham </h4><br />
-              <hr class="w3-clear" />
-              <p>"On the other hand, we denounce with righteous indignation and dislike men who are so beguiled and demoralized by the charms of pleasure of the moment, so blinded by desire, that they cannot foresee the pain and trouble that are bound to ensue; and equal blame belongs to those who fail in their duty through weakness of will, which is the same as saying through shrinking from toil and pain. These cases are perfectly simple and easy to distinguish. In a free hour, when our power of choice is untrammelled and when nothing prevents our being able to do what we like best, every pleasure is to be welcomed and every pain avoided. But in certain circumstances and owing to the claims of duty or the obligations of business it will frequently occur that pleasures have to be repudiated and annoyances accepted. The wise man therefore always holds in these matters to this principle of selection: he rejects pleasures to secure other greater pleasures, or else he endures pains to avoid worse pains."</p>
-              <p>
-                <div style={{float: 'left', paddingRight: '3px', paddingBottom: '2px'}}>
-                  <span class="w3-tag w3-small w3-theme"> Lorem Ipsum </span>
-                </div>
-              </p>
-              <br />
-            </div> */}
             {filteredposts === null ? posts.map(function(item) {
 
               console.log(item)
+              var inters = []
+              var photos = []
 
               if (item[5].length !== 0) {
-                var inters = item[5].split(",")
+                inters = item[5].split(",")
               }
               if (item[4].length !== 0) {
-                var photos = item[4].split(",")
+                photos = item[4].split(",")
               }
+
+              console.log(photos)
+              var photos_updated = []
+              if (photos.length !== 0) {
+                for (var i = 0; i < photos.length; i++) {
+                  if (i % 2 !== 0) {
+                    photos_updated.push(photos[i])
+                  }
+                }
+              }
+              console.log(photos_updated)
 
               var indents = [];
               for (var interest in inters) {
@@ -174,6 +148,15 @@ function Texts() {
               <h4 class="w3-left"> {item[1]} </h4><br />
               <hr class="w3-clear" />
               <p> {item[3]} </p>
+              {photos_updated.length !== 0 ?
+                <Slide>
+                  {photos_updated.map((image, index)=> (
+                    <div className="each-slide" key={index}>
+                      <img class="image-upload" src={"data:image/png;base64," + image} alt="Card image cap" />
+                    </div>
+                  ))} 
+                </Slide>: <>
+                </>}
               <p>
                 <div style={{float: 'left', paddingRight: '3px', paddingBottom: '2px'}}>
                   {indents}
@@ -243,6 +226,8 @@ function Texts() {
 
         </div>
       </div>
+
+      <Footer />
 
     </div>
   );

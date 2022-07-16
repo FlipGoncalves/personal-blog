@@ -7,7 +7,9 @@ import reportWebVitals from './reportWebVitals';
 
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
-// import AboutMe from './component/aboutme'
+import AboutMe from './pages/aboutme/aboutme';
+import Texts from './pages/texts/texts';
+import Posts from './pages/posts/posts';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
@@ -15,7 +17,9 @@ root.render(
     <Router>
       <Routes>
         <Route path="/" element={ < App /> }></Route>
-        {/* <Route exact path='/login' element={< Login />}></Route> */}
+        <Route exact path='/blog' element={< Texts />}></Route>
+        <Route exact path='/me' element={< AboutMe />}></Route>
+        <Route exact path='/post' element={< Posts />}></Route>
       </Routes>
     </Router>
   </React.StrictMode>,
