@@ -10,6 +10,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import AboutMe from './pages/aboutme/aboutme';
 import Texts from './pages/texts/texts';
 import Posts from './pages/posts/posts';
+import Lifestyle from './pages/lifestyle/lifestyle';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
@@ -20,6 +21,7 @@ root.render(
         <Route exact path='/blog' element={< Texts />}></Route>
         <Route exact path='/me' element={< AboutMe />}></Route>
         <Route exact path='/post' element={< Posts />}></Route>
+        <Route exact path='/life' element={< Lifestyle />}></Route>
       </Routes>
     </Router>
   </React.StrictMode>,

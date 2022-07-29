@@ -2,11 +2,13 @@ import React from 'react';
 import './css/bootstrap.min.css';
 import './css/style.css';
 import './fonts/icomoon/style.css';
-
+import { useLocation } from "react-router-dom";
 import { Link, NavLink } from 'react-router-dom';
 
 
 function Navbar() {
+
+  const location = useLocation();
 
   // This styling will be applied to a <NavLink> when the
   // route that it links to is currently selected.
@@ -47,36 +49,28 @@ function Navbar() {
                         }>
                         <span>Home</span>
                     </NavLink></li>
-                {/* <li class="has-children">
-                  <NavLink 
-                      to="/" 
-                      style={({ isActive }) =>
-                        isActive ? activeStyle : undefined
-                      }><span>Dropdown</span>
-                    </NavLink>
-                  <ul class="dropdown arrow-top">
-                    <li><a href="#">Menu One</a></li>
-                    <li class="has-children">
-                      <a href="#">Dropdown</a>
-                      <ul class="dropdown">
-                        <li><a href="#">Menu One</a></li>
-                        <li><a href="#">Menu Two</a></li>
-                        <li><a href="#">Menu Three</a></li>
-                        <li><a href="#">Menu Four</a></li>
-                      </ul>
-                    </li>
-                  </ul>
-                </li> */}
                 <li class="has-children">
                   <NavLink 
-                      to="/" 
+                      to="/life" 
                       style={({ isActive }) =>
                         isActive ? activeStyle : undefined
                       }><span>Lifestyle</span>
                     </NavLink>
                   <ul class="dropdown arrow-top">
-                    <li><a href="#">Recipes</a></li>
-                    <li><a href="#">Photography</a></li>
+                  <li>
+                    <NavLink 
+                      to="/life#recipes"
+                      style={({ isActive }) =>
+                        isActive ? activeStyle : undefined
+                      }><span>Recipes</span>
+                    </NavLink></li>
+                    <li>
+                    <NavLink 
+                      to="/life#photo"
+                      style={({ isActive }) =>
+                        isActive ? activeStyle : undefined
+                      }><span>Photography</span>
+                    </NavLink></li>
                   </ul>
                 </li>
                 <li class="has-children">
@@ -87,8 +81,20 @@ function Navbar() {
                       }><span>Articles</span>
                     </NavLink>
                   <ul class="dropdown arrow-top">
-                    <li><a onClick={() => {localStorage.setItem("type", "1")}}>Reflections</a></li>
-                    <li><a onClick={() => {localStorage.setItem("type", "2")}}>Business Related</a></li>
+                    <li>
+                    <NavLink 
+                      to="/blog#reflections"
+                      style={({ isActive }) =>
+                        isActive ? activeStyle : undefined
+                      }><span>Reflections</span>
+                    </NavLink></li>
+                    <li>
+                      <NavLink 
+                      to="/blog#business"
+                      style={({ isActive }) =>
+                        isActive ? activeStyle : undefined
+                      }><span>Business</span>
+                    </NavLink></li>
                   </ul>
                 </li>
                 <li><NavLink
@@ -108,15 +114,12 @@ function Navbar() {
               </ul>
             </nav>
           </div>
-
-
-          <div class="d-inline-block d-xl-none ml-md-0 mr-auto py-3" style={{position: "relative", top: "3px"}}><a href="#" class="site-menu-toggle js-menu-toggle text-white"><span class="icon-menu h3"></span></a></div>
-
           </div>
 
         </div>
     </header>
     
+    <br style={{marginBottom: '10rem'}} />
     </div>
   );
 }

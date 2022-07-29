@@ -9,6 +9,7 @@ function Posts() {
   const [images, setImages] = React.useState([]);
   const maxNumber = 20;
   const [interests, setInterests] = React.useState([]);
+  const [error, setError] = React.useState(null);
 
   const onChange = (imageList, addUpdateIndex) => {
     // data for submit
@@ -29,6 +30,7 @@ function Posts() {
   }
 
   const postPosts = () => {
+    setError("");
     var post = {author: 'Sandra Leonor', photos: images.map(function(item) {return item["data_url"]}), message: document.getElementById("message").value, interests: interests}
 
     console.log(post)
@@ -36,13 +38,25 @@ function Posts() {
     var business = document.getElementById("business").checked
     console.log(business)
 
+    if (post["message"] == "") {
+        console.log("message");
+        setError("You didn't add a message!")
+        return;
+    }
+
+    if (post["interests"].length == 0) {
+        console.log("interests");
+        setError("You didn't add any interests!")
+        return;
+    }
+
     let formData = new FormData();
 
     formData.append("message", post["message"]);
     formData.append("author", post["author"]);
     formData.append("photos", post["photos"]);
     formData.append("interests", post["interests"]);
-    formData.append("type", business ? "business" : "reflections");
+    formData.append("type", business ? "Business" : "Reflections");
     
 
     let resp = fetch('http://localhost:5000/posts/all', {
@@ -80,9 +94,12 @@ function Posts() {
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" />
 
-        <br />      
-
-        <div class="container w3-content" style={{maxWidth:'80%', marginTop: '10rem'}}>
+        <div class="container w3-content" style={{maxWidth:'80%'}}>
+            {error !== "" ? 
+            <div class="row">
+                <h2 class="col-md-4"></h2>
+                <h2 class="col-md-4" style={{textAlign: "center", color: "red"}}>{error}</h2>
+            </div> : <></>}
 
             <div class="row">
                 <textarea class="form-control" name="paragraph_text" placeholder="Write something..." id="message" rows="8"></textarea>

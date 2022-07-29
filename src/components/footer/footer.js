@@ -3,7 +3,7 @@ import React from 'react';
 function Footer() {
 
   return (
-    <footer class="footer py-4" style={{marginTop: '2rem'}}>
+    <footer class="footer" style={{marginTop: '2rem', height: '5rem'}}>
         <div class="container">
             <div class="row align-items-center">
                 <div class="col-lg-6 text-lg-start">Copyright &copy; My Name Inês 2022</div>

@@ -5,27 +5,45 @@ import logo from '../../logo.svg'
 import './texts.css'
 import { Slide } from 'react-slideshow-image';
 import 'react-slideshow-image/dist/styles.css'
+import { useLocation } from "react-router-dom";
 
 function Texts() {
 
   const [posts, setPosts] = useState([]);
+  const [error, setError] = useState("");
   const [interests, setInterests] = useState([]);
   const [filteredposts, setFilteredposts] = useState(null);
 
-  function handleRequest() {
-  // get all posts
-  console.log("get posts")
-  console.log(localStorage.getItem("Business"))
-  console.log(localStorage.getItem("Business"))
+  const [present_item, setPresentItem] = useState([]);
 
-    let resp = fetch('http://localhost:5000/posts/all', {
+  const location = useLocation();
+
+  useEffect(() => {
+    console.log("Location changed");
+    handleRequest()
+  }, [location]);
+
+  function handleRequest() {
+    setError("")
+
+    // get all posts
+    console.log("get posts")
+    var db = "all";
+    if (location["hash"] == "#reflections") {
+      db = "Reflections"
+    }
+    if (location["hash"] == "#business") {
+      db = "Business"
+    }
+
+    let resp = fetch('http://localhost:5000/posts/'+db, {
       method: 'GET'
     }).then((data)=>{
       data.json().then((properties) => {
-        console.log(properties)
         if ("error" in properties) {
           console.log("error")
           setPosts([[-1, "Error Handling the data", "", "Please refresh the page and if the error subsits please contact the administartor", [], []]]);
+          setError("error")
           return
         }
         setPosts([])
@@ -37,14 +55,27 @@ function Texts() {
     }).catch((error) => {
       console.log("error")
       setPosts([[-1, "Error Handling the data", "", "Please refresh the page and if the error subsits please contact the administartor", [], []]]);
+      setError("error")
     })
+
   }
+
+  useEffect(() => {
+    if (posts.length >= 2)
+      setPresentItem([posts[posts.length-1], posts[posts.length-2]])
+    else if (posts.length == 1)
+      setPresentItem([posts[posts.length-1]])
+    else 
+      setPresentItem([])
+  }, [posts]);
 
   useEffect(() => {
     handleRequest()
   }, [])
 
   function handleChange(event) {
+    setError("")
+
     let input = event.target.value
     setFilteredposts(null)
     if (input === "") {
@@ -56,10 +87,9 @@ function Texts() {
       if (element[3].toLowerCase().includes(input.toLowerCase()))
         return element });
 
-    console.log(old_array_filtered)
-
     if (old_array_filtered.length === 0) {
       setFilteredposts([[-1, "Post Not Found", "", "We didn't find no posts with a message like that, please review what was written and try again", [], []]]);
+      setError("error")
       return;
     }
 
@@ -68,7 +98,7 @@ function Texts() {
   }
 
   return (
-    <div className='App back-color'>
+    <div className='App back-color' style={{minHeight: '100vh'}}>
 
       <Navbar />
 
@@ -84,29 +114,52 @@ function Texts() {
       <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" />
       <link href='https://fonts.googleapis.com/css?family=Lato' rel='stylesheet' type='text/css' />
 
-      <br />
+      <h1 style={{fontSize: 60}}>Articles</h1>
 
-      <div class="container" style={{maxWidth:'100%', marginTop: '10rem'}}>
+      {/* <h4>Search for a specific text!</h4> */}
+      {/* <div class="container" style={{maxWidth:'100%'}}>
         <div class="row">
           <div class="col-md-10">
             <input class="form-control" id="myInput" type="text" placeholder="Search.." onChange={handleChange}/>
           </div>
           <div class="col-md-2">
-            <button class="button-3" role="button" onClick={() => {
-              console.log(localStorage.getItem("Business"))
-              console.log(localStorage.getItem("Reflections"))
-            }}><i class="fa fa-search fa-fw w3-margin-right"></i>Search</button>
+            <button class="button-3" role="button"><i class="fa fa-search fa-fw w3-margin-right"></i>Search</button>
+          </div>
+        </div>
+      </div> */}
+
+      {error === "" ?
+      <div class="w3-container w3-content" style={{maxWidth:'80%', marginTop: '2rem'}}>
+        <div class="w3-row">
+          <div class="w3-col m4">
+            <h2 style={{textAlign: 'right', fontSize: 40, paddingRight: "2rem"}}> Recent Articles </h2>
+            <h3 style={{textAlign: 'right', fontSize: 20, paddingRight: "2rem"}}> The last articles that were added </h3>
+          </div>
+          <div class="w3-col m8 trans">
+            {present_item.map(function(item) {
+
+              console.log(item)
+
+              return (
+                  <div class="w3-container" style={{borderLeft: "2px solid black", cursor: "pointer"}} onClick={() => alert("here")}>
+                    <h3 style={{textAlign: 'left'}}> {item[1]} </h3>
+                    <h4 style={{textAlign: 'left', opacity: 0.6}}> {item[2]} - {item[6]}</h4>
+                    <p class="w3-left"> {item[3].length <= 130 ? item[3] : item[3].substring(0,130) + "..."} </p>
+                    <br />
+                    <hr class="w3-clear" style={{border: "1px solid black", marginBottom: '1rem'}}/>
+                  </div>
+              )
+            })}
           </div>
         </div>
       </div>
+      : <></> }
 
-      <div class="w3-container w3-content" style={{maxWidth:'80%', marginTop: '2em'}}>
+      <div class="w3-container w3-content" style={{maxWidth:'80%', marginTop: '2rem'}}>
         <div class="w3-row">
 
           <div class="w3-col m9">
             {filteredposts === null ? posts.map(function(item) {
-
-              console.log(item)
               var inters = []
               var photos = []
 
@@ -117,7 +170,6 @@ function Texts() {
                 photos = item[4].split(",")
               }
 
-              console.log(photos)
               var photos_updated = []
               if (photos.length !== 0) {
                 for (var i = 0; i < photos.length; i++) {
@@ -126,23 +178,19 @@ function Texts() {
                   }
                 }
               }
-              console.log(photos_updated)
 
               var indents = [];
               for (var interest in inters) {
                 indents.push(<span class="w3-tag w3-small w3-theme" style={{marginLeft: '1rem'}}> {inters[interest]} </span>);
 
                 if ( ! interests.includes(inters[interest])) {
-                  console.log(inters[interest])
-                  console.log(interests)
                   var oldarray = interests
                   oldarray.push(inters[interest])
                   setInterests(oldarray)
-                  console.log(interests)
                 }
               }
 
-              return (<div class="w3-container w3-row-padding w3-card w3-white w3-round" style={{marginRight: '2rem', marginBottom: '2rem'}}><br />
+              return (<div class="w3-container w3-row-padding w3-card w3-white w3-round" style={{marginRight: '2rem', marginBottom: '1rem'}}><br />
               <img src={logo} alt="Avatar" class="w3-left w3-circle w3-margin-right" style={{width:'60px'}} />
               <span class="w3-right w3-opacity"> {item[2]} </span>
               <h4 class="w3-left"> {item[1]} </h4><br />
@@ -162,6 +210,11 @@ function Texts() {
                   {indents}
                 </div>
               </p>
+              <p>
+                <div style={{float: 'right', paddingLeft: '3px', paddingBottom: '2px'}}>
+                <span class="w3-tag w3-small w3-theme" style={{marginRight: '1rem'}}> {item[6]} </span>
+                </div>
+              </p>
               <br />
             </div>)
             }) : filteredposts.map(function(item) {
@@ -178,12 +231,9 @@ function Texts() {
                 indents.push(<span class="w3-tag w3-small w3-theme" style={{marginLeft: '1rem'}}> {inters[interest]} </span>);
 
                 if ( ! interests.includes(inters[interest])) {
-                  console.log(inters[interest])
-                  console.log(interests)
                   var oldarray = interests
                   oldarray.push(inters[interest])
                   setInterests(oldarray)
-                  console.log(interests)
                 }
               }
 
@@ -217,7 +267,7 @@ function Texts() {
                   </p>
                 </div>
                 <div class="w3-row">
-                  <button class="button-3" role="button" style={{width: '50%', marginBottom: '1rem', marginTop: '1rem'}}><i class="fa fa-filter fa-fw w3-margin-right"></i>Filter</button>
+                  <button class="button-3" role="button" style={{width: '50%', marginBottom: '1rem'}}><i class="fa fa-filter fa-fw w3-margin-right"></i>Filter</button>
                 </div>
               </div>
             </div>

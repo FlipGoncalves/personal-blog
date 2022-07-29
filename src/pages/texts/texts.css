@@ -1,4 +1,6 @@
 .image-upload {
   height: 300px;
-  margin: 2px
+  width: 300px;
+  margin: 2px;
+  object-fit: cover;
 }
