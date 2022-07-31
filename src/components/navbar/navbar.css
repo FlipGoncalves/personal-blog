@@ -1,0 +1,9 @@
+.navbar {
+    height: 80px;
+    transition: 0.3s;
+    background-color: beige;
+    }
+    
+    .navbar:hover {
+        background-color: rgba(200,196,180, 0.9);
+    }

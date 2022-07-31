@@ -1,3 +1,7 @@
+body {
+  scroll-behavior: smooth;
+}
+
 .App {
   text-align: center;
 }
@@ -38,8 +42,9 @@
 }
 
 .back-color {
-  background-color: rgba(47, 247, 51, 0.64);
-  z-index: -1
+  background-color: beige;
+  z-index: -1;
+  height: 100%;
 }
 
 /* CSS */
@@ -116,3 +121,10 @@
 }
 
 .dropdown-content a:hover {background-color: #f1f1f1}
+
+#footer {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  height: 5rem;
+}

@@ -1,25 +1,98 @@
 import React, { useEffect, useState } from 'react';
+import Footer from '../../components/footer/footer';
 import Navbar from '../../components/navbar/navbar';
-import logo from '../../logo.svg'
+import './texts.css'
+// import { Slide } from 'react-slideshow-image';
+import 'react-slideshow-image/dist/styles.css'
+import { useLocation } from "react-router-dom";
+import Button from 'react-bootstrap/Button';
+import Modal from 'react-bootstrap/Modal';
+
+function ModalComp({ closeModal, data }) {
+
+  console.log("modal here")
+  console.log(data)
+
+  var inters = []
+
+  if (data[5].length !== 0) {
+    inters = data[5].split(",")
+  }
+
+  var indents = [];
+    for (var interest in inters) {
+      indents.push(<span style={{textAlign: 'left', padding: "0 5px 0 5px"}}> {inters[interest]} </span>);
+    }
+
+  return (
+    <Modal
+      show={true}
+      onHide={() => closeModal()}
+      size="lg"
+      centered
+    >
+      <Modal.Header>
+        <Modal.Title id="contained-modal-title-vcenter">
+          <h3>{data[1]} - {data[2]}</h3>
+        </Modal.Title>
+      </Modal.Header>
+      <Modal.Body>
+        <p style={{fontSize: 18}}>
+          {data[3]}
+        </p>
+      </Modal.Body>
+      <Modal.Footer>
+        {indents}
+        <Button onClick={closeModal}>Close</Button>
+      </Modal.Footer>
+    </Modal>
+  );
+}
 
 function Texts() {
 
   const [posts, setPosts] = useState([]);
+  const [error, setError] = useState("");
   const [interests, setInterests] = useState([]);
   const [filteredposts, setFilteredposts] = useState(null);
 
+  const [present_item, setPresentItem] = useState([]);
+
+  const location = useLocation();
+
+  const [modal, setModal] = useState({ show: false, data: null });
+
+  const handleClose = () => {
+    setModal({ show: false, data: null });
+  };
+
+  useEffect(() => {
+    console.log("Location changed");
+    handleRequest()
+  }, [location]);
+
   function handleRequest() {
+    setError("")
+    setFilteredposts(null)
+
     // get all posts
     console.log("get posts")
+    var db = "all";
+    if (location["hash"] === "#reflections") {
+      db = "Reflections"
+    }
+    if (location["hash"] === "#business") {
+      db = "Business"
+    }
 
-    let resp = fetch('http://localhost:5000/posts/all', {
+    fetch('http://localhost:5000/posts/'+db, {
       method: 'GET'
     }).then((data)=>{
       data.json().then((properties) => {
-        console.log(properties)
         if ("error" in properties) {
           console.log("error")
           setPosts([[-1, "Error Handling the data", "", "Please refresh the page and if the error subsits please contact the administartor", [], []]]);
+          setError("error")
           return
         }
         setPosts([])
@@ -31,71 +104,101 @@ function Texts() {
     }).catch((error) => {
       console.log("error")
       setPosts([[-1, "Error Handling the data", "", "Please refresh the page and if the error subsits please contact the administartor", [], []]]);
+      setError("error")
     })
+
   }
 
-  const postPosts = () => {
-    var post = {author: 'Filipe', photos: [], message: 'sim tudo bem', interests: ['Interest 69']}
-    // var post = {author: 'Sandra Leonor', photos: [], message: 'ola ines tudo bem ?', interests: ['Interest 1', 'Interest 3']}
-
-    console.log(post)
-
-    let formData = new FormData();
-
-    formData.append("message", post["message"]);
-    formData.append("author", post["author"]);
-    formData.append("photos", post["photos"]);
-    formData.append("interests", post["interests"]);
-    
-
-    let resp = fetch('http://localhost:5000/posts/all', {
-      method: 'POST',
-      body: formData
-    }).then((data)=>{
-      data.json().then((properties) => {
-        console.log(properties)
-        if ("error" in properties) {
-          console.log("error")
-          return
-        }
-
-        handleRequest()
-
-      })
-    }).catch((error) => {
-      console.log("error")
-    })
-  }
+  useEffect(() => {
+    if (posts.length >= 2)
+      setPresentItem([posts[posts.length-1], posts[posts.length-2]])
+    else if (posts.length == 1)
+      setPresentItem([posts[posts.length-1]])
+    else 
+      setPresentItem([])
+  }, [posts]);
 
   useEffect(() => {
     handleRequest()
   }, [])
 
-  function handleChange(event) {
-    let input = event.target.value
-    setFilteredposts(null)
-    if (input === "") {
+  function searchFor(item) {
+    setError("")
+
+    if (item === "All") {
       handleRequest()
       return;
     }
+
+
+    setFilteredposts(null)
+
     var oldarray = posts
+    
     let old_array_filtered = oldarray.filter(function(element) {
-      if (element[3].toLowerCase().includes(input.toLowerCase()))
-        return element });
-
-    console.log(old_array_filtered)
-
-    if (old_array_filtered.length === 0) {
-      setFilteredposts([[-1, "Post Not Found", "", "We didn't find no posts with a message like that, please review what was written and try again", [], []]]);
-      return;
-    }
+        if (element[5].split(",").includes(item))
+          return element });
 
     setFilteredposts(old_array_filtered)
     return;
   }
 
+  function ItemMap(item) {
+    var inters = []
+    var photos = []
+
+    if (item[5].length !== 0) {
+      inters = item[5].split(",")
+    }
+    if (item[4].length !== 0) {
+      photos = item[4].split(",")
+    }
+
+    var photos_updated = []
+    if (photos.length !== 0) {
+      for (var i = 0; i < photos.length; i++) {
+        if (i % 2 !== 0) {
+          photos_updated.push(photos[i])
+        }
+      }
+    }
+
+    var indents = [];
+    for (var interest in inters) {
+      indents.push(<span style={{textAlign: 'left', padding: "0 5px 0 5px"}}> {inters[interest]} </span>);
+
+      if ( ! interests.includes(inters[interest])) {
+        var oldarray = interests
+        oldarray.push(inters[interest])
+        setInterests(oldarray)
+      }
+    }
+
+    return (
+      <div class="w3-row">
+        <div class="w3-col m9">
+          <div class="w3-container" style={{borderRight: "2px solid black", cursor: "pointer"}} onClick={() => setModal({ show: true, data: item })}>
+            <h3 style={{textAlign: 'right'}}> {item[1]} </h3>
+            <h4 style={{textAlign: 'right', opacity: 0.6}}> {item[2]} - {item[6]}</h4>
+            <p class="w3-right"> {item[3].length <= 150 ? item[3] : item[3].substring(0,150) + "..."} </p>
+            <br />
+            <hr class="w3-clear" style={{border: "1px solid black", marginBottom: '1rem'}}/>
+          </div>
+        </div>
+        <div class="w3-col m3" style={{height: "100%"}}>
+          <div class="w3-container">
+            <h5 style={{textAlign: 'left', fontSize: 17, paddingLeft: "2rem"}}> 
+              {indents} 
+            </h5>
+            <hr class="w3-clear" style={{border: "1px solid black", marginBottom: '1rem'}}/>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
   return (
-    <div className='App back-color' style={{height: '200vh'}}>
+    <div className='App back-color'>
 
       <Navbar />
 
@@ -108,144 +211,76 @@ function Texts() {
       <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
       <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
       <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-      <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" />
 
-      <br />
+      <h1 style={{fontSize: 40}}>Articles</h1>
 
-      <div class="container" style={{maxWidth:'100%', marginTop: '10rem'}}>
+      {/* <h4>Search for a specific text!</h4> */}
+      {/* <div class="container" style={{maxWidth:'100%'}}>
         <div class="row">
-          <div class="col-md-9">
+          <div class="col-md-10">
             <input class="form-control" id="myInput" type="text" placeholder="Search.." onChange={handleChange}/>
           </div>
           <div class="col-md-2">
             <button class="button-3" role="button"><i class="fa fa-search fa-fw w3-margin-right"></i>Search</button>
           </div>
-          <div class="col-md-1">
-            <button class="button-3" role="button" onClick={postPosts}>Post</button>
-          </div>
         </div>
-      </div>
+      </div> */}
 
-      <div class="w3-container w3-content" style={{maxWidth:'80%', marginTop: '2em'}}>
+      {error === "" ?
+      <div class="w3-container w3-content" style={{maxWidth:'80%', marginTop: '2rem'}}>
         <div class="w3-row">
-
-          <div class="w3-col m9">
-            {/* <div class="w3-container w3-row-padding w3-card w3-white w3-round" style={{marginRight: '2rem'}}><br />
-              <img src={logo} alt="Avatar" class="w3-left w3-circle w3-margin-right" style={{width:'60px'}} />
-              <span class="w3-right w3-opacity"> 1914</span>
-              <h4 class="w3-left"> H. Rackham </h4><br />
-              <hr class="w3-clear" />
-              <p>"On the other hand, we denounce with righteous indignation and dislike men who are so beguiled and demoralized by the charms of pleasure of the moment, so blinded by desire, that they cannot foresee the pain and trouble that are bound to ensue; and equal blame belongs to those who fail in their duty through weakness of will, which is the same as saying through shrinking from toil and pain. These cases are perfectly simple and easy to distinguish. In a free hour, when our power of choice is untrammelled and when nothing prevents our being able to do what we like best, every pleasure is to be welcomed and every pain avoided. But in certain circumstances and owing to the claims of duty or the obligations of business it will frequently occur that pleasures have to be repudiated and annoyances accepted. The wise man therefore always holds in these matters to this principle of selection: he rejects pleasures to secure other greater pleasures, or else he endures pains to avoid worse pains."</p>
-              <p>
-                <div style={{float: 'left', paddingRight: '3px', paddingBottom: '2px'}}>
-                  <span class="w3-tag w3-small w3-theme"> Lorem Ipsum </span>
-                </div>
-              </p>
-              <br />
-            </div> */}
-            {filteredposts === null ? posts.map(function(item) {
-
-              console.log(item)
-
-              if (item[5].length !== 0) {
-                var inters = item[5].split(",")
-              }
-              if (item[4].length !== 0) {
-                var photos = item[4].split(",")
-              }
-
-              var indents = [];
-              for (var interest in inters) {
-                indents.push(<span class="w3-tag w3-small w3-theme" style={{marginLeft: '1rem'}}> {inters[interest]} </span>);
-
-                if ( ! interests.includes(inters[interest])) {
-                  console.log(inters[interest])
-                  console.log(interests)
-                  var oldarray = interests
-                  oldarray.push(inters[interest])
-                  setInterests(oldarray)
-                  console.log(interests)
-                }
-              }
-
-              return (<div class="w3-container w3-row-padding w3-card w3-white w3-round" style={{marginRight: '2rem', marginBottom: '2rem'}}><br />
-              <img src={logo} alt="Avatar" class="w3-left w3-circle w3-margin-right" style={{width:'60px'}} />
-              <span class="w3-right w3-opacity"> {item[2]} </span>
-              <h4 class="w3-left"> {item[1]} </h4><br />
-              <hr class="w3-clear" />
-              <p> {item[3]} </p>
-              <p>
-                <div style={{float: 'left', paddingRight: '3px', paddingBottom: '2px'}}>
-                  {indents}
-                </div>
-              </p>
-              <br />
-            </div>)
-            }) : filteredposts.map(function(item) {
-
-              if (item[5].length !== 0) {
-                var inters = item[5].split(",")
-              }
-              if (item[4].length !== 0) {
-                var photos = item[4].split(",")
-              }
-
-              var indents = [];
-              for (var interest in inters) {
-                indents.push(<span class="w3-tag w3-small w3-theme" style={{marginLeft: '1rem'}}> {inters[interest]} </span>);
-
-                if ( ! interests.includes(inters[interest])) {
-                  console.log(inters[interest])
-                  console.log(interests)
-                  var oldarray = interests
-                  oldarray.push(inters[interest])
-                  setInterests(oldarray)
-                  console.log(interests)
-                }
-              }
-
-              return (<div class="w3-container w3-row-padding w3-card w3-white w3-round" style={{marginRight: '2rem', marginBottom: '2rem'}}><br />
-              <img src={logo} alt="Avatar" class="w3-left w3-circle w3-margin-right" style={{width:'60px'}} />
-              <span class="w3-right w3-opacity"> {item[2]} </span>
-              <h4 class="w3-left"> {item[1]} </h4><br />
-              <hr class="w3-clear" />
-              <p> {item[3]} </p>
-              <p>
-                <div style={{float: 'left', paddingRight: '3px', paddingBottom: '2px'}}>
-                  {indents}
-                </div>
-              </p>
-              <br />
-            </div>)
+          <div class="w3-col m4">
+            <h2 style={{textAlign: 'right', fontSize: 35, paddingRight: "2rem"}}> Recent Articles </h2>
+            <h3 style={{textAlign: 'right', fontSize: 20, paddingRight: "2rem"}}> The last articles that were added </h3>
+          </div>
+          <div class="w3-col m8 trans">
+            {present_item.map(function(item) {
+              return (
+                  <div class="w3-container" style={{borderLeft: "2px solid black", cursor: "pointer"}} onClick={() => setModal({ show: true, data: item })}>
+                    <h3 style={{textAlign: 'left'}}> {item[1]} </h3>
+                    <h4 style={{textAlign: 'left', opacity: 0.6}}> {item[2]} - {item[6]}</h4>
+                    <p class="w3-left"> {item[3].length <= 130 ? item[3] : item[3].substring(0,130) + "..."} </p>
+                    <br />
+                    <hr class="w3-clear" style={{border: "1px solid black", marginBottom: '1rem'}}/>
+                  </div>
+              )
             })}
           </div>
-
-          <div class="w3-col m3">
-            <div class="w3-card w3-round w3-white w3-hide-small">
-              <div class="w3-container">
-                <h3>Interests</h3>
-                <div class="w3-row">
-                  <p>
-                    <div style={{float: 'left', paddingRight: '3px', paddingBottom: '2px'}}>
-                      {interests.map(function(element) {
-                        return <span class="w3-tag w3-small w3-theme" style={{marginLeft: '1rem'}}> {element} </span>
-                      })}
-                    </div>
-                  </p>
-                </div>
-                <div class="w3-row">
-                  <button class="button-3" role="button" style={{width: '50%', marginBottom: '1rem', marginTop: '1rem'}}><i class="fa fa-filter fa-fw w3-margin-right"></i>Filter</button>
-                </div>
-              </div>
-            </div>
-            <br />
-          </div>
-
         </div>
       </div>
+      : <></> }
+
+      <button class="btn-interest" onClick={() => searchFor("All")}>All</button>
+      {interests.map(function(item) {
+        return (
+          <button class="btn-interest" onClick={() => searchFor(item)}>{item}</button>
+        )
+      })}
+
+
+      {modal.show && modal.data && <ModalComp closeModal={handleClose} data={modal.data} />}
+
+      <div class="w3-container w3-content" style={{maxWidth:'80%', marginTop: '2rem'}}>
+        <div class="w3-row">
+            {filteredposts === null ? posts.map(function(item) {return ItemMap(item)}) : filteredposts.map(function(item) {return ItemMap(item)})}
+        </div>
+      </div>
+
+      <Footer />
 
     </div>
   );
 }
 
 export default Texts;
+
+
+// {photos_updated.length !== 0 ?
+//   <Slide>
+//     {photos_updated.map((image, index)=> (
+//       <div className="each-slide" key={index}>
+//         <img class="image-upload" src={"data:image/png;base64," + image} alt="Card image cap" />
+//       </div>
+//     ))} 
+//   </Slide>: <>
+//   </>}

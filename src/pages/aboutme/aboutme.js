@@ -1,12 +1,19 @@
-import React from 'react';
+import React, { useState } from 'react';
+import Footer from '../../components/footer/footer';
 import Navbar from '../../components/navbar/navbar';
 import logo from '../../logo.svg'
+import './aboutme.css'
+import Button from 'react-bootstrap/Button';
+import Modal from 'react-bootstrap/Modal';
 
 function AboutMe() {
-  return (
-    <div className='App back-color' style={{height: '200vh'}}>
 
-      <Navbar />
+  const [modalShow, setModalShow] = React.useState(false);
+
+  return (
+    <div className='App back-color' style={{height: '100vh'}}>
+
+      <Navbar></Navbar>
 
       <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css" />
       <link rel="stylesheet" href="https://www.w3schools.com/lib/w3-theme-blue-grey.css" />
@@ -17,11 +24,9 @@ function AboutMe() {
       <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
       <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
       <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-      <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" />
 
-      <br />
 
-      <div class="w3-container w3-content" style={{maxWidth:'80%', marginTop: '10rem'}}>
+      <div class="w3-container w3-content" style={{maxWidth:'80%'}}>
         <div class="w3-row">
             
           <div class="w3-col m12">
@@ -40,6 +45,35 @@ function AboutMe() {
       </div>
 
     </div>
+
+      {/* <div onClick={() => setModalShow(true)}><h1>Click here</h1></div>
+
+      <Modal
+        show={modalShow}
+        size="lg"
+        aria-labelledby="contained-modal-title-vcenter"
+        centered
+      >
+        <Modal.Header closeButton>
+          <Modal.Title id="contained-modal-title-vcenter">
+            Modal heading
+          </Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <h4>Centered Modal</h4>
+          <p>
+            Cras mattis consectetur purus sit amet fermentum. Cras justo odio,
+            dapibus ac facilisis in, egestas eget quam. Morbi leo risus, porta ac
+            consectetur ac, vestibulum at eros.
+          </p>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button onClick={() => setModalShow(false)}>Close</Button>
+        </Modal.Footer>
+      </Modal> */}
+
+    <Footer />
+    
     </div>
   );
 }

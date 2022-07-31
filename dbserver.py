@@ -6,6 +6,7 @@ import logging
 from flask_cors import CORS, cross_origin
 import hashlib
 from datetime import date
+import re
 
 # logger
 logging.basicConfig(filename="api.log", level=logging.CRITICAL)
@@ -28,7 +29,8 @@ with sql.connect('mydb') as con:
                     date_posted Date,
                     message text not null,
                     photos blob,
-                    interests blob);
+                    interests blob,
+                    type text);
                 """)
     cur.execute("""
                 CREATE TABLE if not exists Profile (
@@ -91,7 +93,13 @@ class Post(Resource):
                     cur.execute("SELECT * FROM Posts")
                 elif method == "date":
                     app.logger.debug("Get all posts request from the date")
-                    cur.execute("SELECT * FROM Posts WHERE julianday('?') - julianday(date_posted) > 0", (method))
+                    cur.execute("SELECT * FROM Posts ORDER BY id DESC LIMIT 3")
+                elif method in ["Reflections", "Business"]:
+                    app.logger.debug("Get all posts request from type")
+                    cur.execute("SELECT * FROM Posts WHERE type = ?", (method,))
+                elif method == "photo":
+                    app.logger.debug("Get all posts request from type")
+                    cur.execute("SELECT photos FROM Posts")
 
                 result = cur.fetchall()
                 cur.close()
@@ -121,6 +129,7 @@ class Post(Resource):
         date_posted = date.today().strftime("%Y/%m/%d")
         message = request.form["message"]
         interests = request.form["interests"]
+        type = request.form["type"]
 
         # database call
         app.logger.debug("-- Begin -- Database call while updating old photo")
@@ -128,7 +137,7 @@ class Post(Resource):
             with sql.connect('mydb') as con:
                 cur = con.cursor()
                 # UPDATE <Table of Users> SET <photo> = <inputed photo> WHERE <identification> = <inputed identification>
-                cur.execute("INSERT INTO Posts(author, date_posted, message, photos, interests) VALUES(?,?,?,?,?)", (author, date_posted, message, photos, interests))
+                cur.execute("INSERT INTO Posts(author, date_posted, message, photos, interests, type) VALUES(?,?,?,?,?,?)", (author, date_posted, message, photos, interests, type))
                 con.commit()
                 cur.close()
                 app.logger.debug(f"Successful query")
@@ -145,7 +154,7 @@ class Post(Resource):
 
 # add Image class to the url so the methods from Image class can get called
 # <method> -> identification for the methods
-# method -> filter by -> interests / date
+# method -> filter by -> interests / date / type
 api.add_resource(Post, '/posts/<method>')
 
 # main
