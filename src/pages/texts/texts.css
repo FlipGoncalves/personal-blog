@@ -4,3 +4,15 @@
   margin: 2px;
   object-fit: cover;
 }
+
+.btn-interest {
+  background: transparent;
+  border: none;
+  margin-top: 6rem;
+  font-size: 20;
+  padding: 0 20px 0 20px;
+}
+
+.btn-interest:hover {
+  text-decoration: underline;
+}

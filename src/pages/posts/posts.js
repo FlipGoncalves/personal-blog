@@ -31,7 +31,11 @@ function Posts() {
 
   const postPosts = () => {
     setError("");
-    var post = {author: 'Sandra Leonor', photos: images.map(function(item) {return item["data_url"]}), message: document.getElementById("message").value, interests: interests}
+    var post = {
+        author: document.getElementById("addTitle").value, 
+        photos: images.map(function(item) {return item["data_url"]}), 
+        message: document.getElementById("message").value, 
+        interests: interests}
 
     console.log(post)
 
@@ -41,6 +45,12 @@ function Posts() {
     if (post["message"] == "") {
         console.log("message");
         setError("You didn't add a message!")
+        return;
+    }
+
+    if (post["title"] == "") {
+        console.log("title");
+        setError("You didn't add a title!")
         return;
     }
 
@@ -76,6 +86,8 @@ function Posts() {
 
     setInterests([]);
     setImages([]);
+    document.getElementById("message").value = "";
+    document.getElementById("addTitle").value = "";
   }
 
   return (
@@ -91,8 +103,6 @@ function Posts() {
         <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" />
 
         <div class="container w3-content" style={{maxWidth:'80%'}}>
             {error !== "" ? 
@@ -109,14 +119,17 @@ function Posts() {
                 <div class="col-md-8">
                     <div class="row">
                         <div class="col-md-9">
-                            <input class="form-control" id="addInterest" type="text" placeholder="Search.."/>
+                            <input class="form-control" id="addInterest" type="text" placeholder="Add Interest"/>
                         </div>
                         <div class="col-md-3">
                             <button class="button-3" role="button" onClick={addInterest}>Add Interest</button>
                         </div>
                     </div>
                     <div class="row" style={{marginTop: '1rem'}}>
-                        <div class="col-md-12">
+                        <div class="col-md-6">
+                            <input class="form-control" id="addTitle" type="text" placeholder="Title"/>
+                        </div>
+                        <div class="col-md-6">
                             <input type="checkbox" id="business" name="scales"/>
                             <label>Business</label>
                         </div>
